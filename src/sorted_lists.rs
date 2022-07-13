@@ -1,7 +1,7 @@
 use std::cmp::{Ordering, Reverse};
 use std::collections::BinaryHeap;
 
-struct Solution {}
+struct Solution();
 
 // Definition for singly-linked list.
 #[derive(PartialEq, Eq, Clone, Debug)]

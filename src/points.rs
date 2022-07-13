@@ -1,6 +1,8 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
+struct Solution();
+
 #[derive(Eq)]
 struct Point {
     dist: i32,
