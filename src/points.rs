@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-struct Solution();
+pub struct Solution();
 
 #[derive(Eq)]
 struct Point {
@@ -32,10 +32,6 @@ impl Point {
         let dist = point[0] * point[0] + point[1] * point[1];
         Self { dist, val: point }
     }
-
-    fn to_vec(self) -> Vec<i32> {
-        return self.val;
-    }
 }
 
 impl Solution {
@@ -48,6 +44,6 @@ impl Solution {
             }
         }
 
-        heap.into_iter().map(|entry| entry.to_vec()).collect()
+        heap.into_iter().map(|entry| entry.val).collect()
     }
 }
