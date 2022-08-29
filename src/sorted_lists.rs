@@ -43,7 +43,7 @@ impl Solution {
         let mut heap: BinaryHeap<Reverse<Wrapper>> = BinaryHeap::new();
 
         let mut head = ListNode { val: 0, next: None };
-        let mut tail: *mut ListNode = &mut head;
+        let mut tail = &mut head;
 
         for entry in lists {
             if let Some(node) = entry {
@@ -56,11 +56,8 @@ impl Solution {
                 heap.push(Reverse(Wrapper(next)))
             }
 
-            let temp: *mut ListNode = &mut *top;
-            unsafe {
-                (*tail).next = Some(top);
-            }
-            tail = temp;
+            tail.next = Some(top);
+            tail = tail.next.as_mut().unwrap();
         }
 
         head.next
