@@ -1,7 +1,7 @@
 use std::cmp::{Ordering, Reverse};
 use std::collections::BinaryHeap;
 
-pub struct Solution();
+pub struct Solution;
 
 // Definition for singly-linked list.
 #[derive(PartialEq, Eq, Clone, Debug)]
@@ -12,7 +12,7 @@ pub struct ListNode {
 
 impl ListNode {
     #[inline]
-    fn new(val: i32) -> Self {
+    pub fn new(val: i32) -> Self {
         ListNode { next: None, val }
     }
 }
@@ -42,13 +42,11 @@ impl Solution {
     pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
         let mut heap: BinaryHeap<Reverse<Wrapper>> = BinaryHeap::new();
 
-        let mut head = ListNode { val: 0, next: None };
+        let mut head = ListNode::new(0);
         let mut tail = &mut head;
 
-        for entry in lists {
-            if let Some(node) = entry {
-                heap.push(Reverse(Wrapper(node)))
-            }
+        for node in lists.into_iter().flatten() {
+            heap.push(Reverse(Wrapper(node)))
         }
 
         while let Some(Reverse(Wrapper(mut top))) = heap.pop() {
@@ -103,7 +101,7 @@ impl Solution {
             }
         }
 
-        *(heap.peek().as_deref().unwrap())
+        *heap.peek().unwrap()
     }
 
     fn reverse(node: Option<Box<ListNode>>, k: usize) -> Option<Box<ListNode>> {
@@ -120,8 +118,115 @@ impl Solution {
     }
 
     pub fn reverse_k_group(head: Option<Box<ListNode>>, k: i32) -> Option<Box<ListNode>> {
-        loop {}
-
         head
+    }
+
+    pub fn add_two_numbers_2(
+        mut l1: Option<Box<ListNode>>,
+        mut l2: Option<Box<ListNode>>,
+    ) -> Option<Box<ListNode>> {
+        let mut dummy = ListNode::new(0);
+        let mut tail = &mut dummy;
+        let mut carry = 0;
+
+        loop {
+            match (l1.take(), l2.take()) {
+                (Some(mut n1), Some(mut n2)) => {
+                    l1 = n1.next.take();
+                    l2 = n2.next.take();
+
+                    // add with carry
+                    let sum = n1.val + n2.val + carry;
+                    carry = sum / 10;
+                    n1.val = sum % 10;
+
+                    // re-use n1 allocation
+                    tail.next = Some(n1);
+                    tail = tail.next.as_mut().unwrap();
+                }
+                (Some(mut n1), None) => {
+                    l1 = n1.next.take();
+
+                    // add with carry
+                    let sum = n1.val + carry;
+                    carry = sum / 10;
+                    n1.val = sum % 10;
+
+                    // re-use n1 allocation
+                    tail.next = Some(n1);
+                    tail = tail.next.as_mut().unwrap();
+                }
+                (None, Some(mut n2)) => {
+                    l2 = n2.next.take();
+
+                    // add with carry
+                    let sum = n2.val + carry;
+                    carry = sum / 10;
+                    n2.val = sum % 10;
+
+                    // re-use n2 allocation
+                    tail.next = Some(n2);
+                    tail = tail.next.as_mut().unwrap();
+                }
+                (None, None) => {
+                    // add the carry digit if it's not 0
+                    if carry > 0 {
+                        tail.next = Some(Box::new(ListNode::new(carry)));
+                    }
+                    break;
+                }
+            };
+        }
+
+        dummy.next.take()
+    }
+
+    pub fn reverse_list(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        head.and_then(|mut head| match head.next.take() {
+            // head.next is now None, and we own it
+            Some(mut next) => {
+                // get raw pointer to the box's contents
+                let mut next_ptr: *mut ListNode = &mut *next;
+                let node = Solution::reverse_list(Some(next));
+                unsafe {
+                    (*next_ptr).next = Some(head);
+                }
+                node
+            }
+            None => Some(head),
+        })
+    }
+
+    pub fn reverse_list_iterative(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        let mut head = head;
+        let mut prev = None;
+
+        while let Some(mut node) = head {
+            head = node.next.take();
+            node.next = prev;
+            prev = Some(node);
+        }
+
+        prev
+    }
+
+    pub fn merge_two_lists(
+        list1: Option<Box<ListNode>>,
+        list2: Option<Box<ListNode>>,
+    ) -> Option<Box<ListNode>> {
+        match (list1, list2) {
+            (Some(mut node1), Some(mut node2)) => {
+                if node1.val < node2.val {
+                    node1.next = Self::merge_two_lists(node1.next, Some(node2));
+                    Some(node1)
+                } else {
+                    node2.next = Self::merge_two_lists(Some(node1), node2.next);
+                    Some(node2)
+                }
+            }
+            (None, Some(node2)) => Some(node2),
+            (Some(node1), None) => Some(node1),
+            (None, None) => None,
+        }
     }
 }

@@ -20,17 +20,17 @@ impl TreeNode {
     }
 }
 
-struct Solution();
+pub struct Solution;
 
 impl Solution {
     pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-        root.and_then(|node| {
+        root.map(|node| {
             let left = node.borrow_mut().left.take();
             let right = node.borrow_mut().right.take();
 
             node.borrow_mut().left = Self::invert_tree(right);
             node.borrow_mut().right = Self::invert_tree(left);
-            Some(node)
+            node
         })
     }
 

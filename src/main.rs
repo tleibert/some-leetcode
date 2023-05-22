@@ -1,7 +1,6 @@
-use meme::arrays;
+use meme::dp::Solution;
 
 fn main() {
-    let bruh = vec![1, 2, 3, 4];
-    let mut sol = arrays::Solution::new(bruh);
-    println!("{:?}", sol.pick_index())
+    let fib = Solution::climb_stairs(40);
+    println!("{fib}");
 }

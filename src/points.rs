@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-pub struct Solution();
+pub struct Solution;
 
 #[derive(Eq)]
 struct Point {
